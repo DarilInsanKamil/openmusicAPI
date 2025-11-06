@@ -15,6 +15,7 @@ const UsersValidator = require('./validator/users');
 const authentications = require('./api/authentications')
 const AuthenticationsService = require('./service/postgres/AuthenticationService');
 const AuthenticationsValidator = require('./validator/authentications')
+const TokenManager = require('./tokenize/TokenManager');
 
 const init = async () => {
     const songService = new SongService();
@@ -57,8 +58,10 @@ const init = async () => {
         {
             plugin: authentications,
             options: {
-                service: authenticationsService,
-                validator: AuthenticationsValidator
+                authenticationsService: authenticationsService,
+                usersService: userService,
+                tokenManager: TokenManager,
+                validator: AuthenticationsValidator,
             }
         },
     ])

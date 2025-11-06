@@ -3,7 +3,7 @@ const {
   PutAuthenticationPayloadSchema,
   DeleteAuthenticationPayloadSchema,
 } = require('./schema');
-const InvariantError = require('../../execption/AuthenticationsError');
+const InvariantError = require('../../execption/InvariantError');
  
 const AuthenticationsValidator = {
   validatePostAuthenticationPayload: (payload) => {
