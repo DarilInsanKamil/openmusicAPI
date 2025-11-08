@@ -31,7 +31,6 @@ class AlbumHandler {
         const songs = await this._service.getSongsByAlbumId(albumId);
         const response = h.response({
             status: 'success',
-            // message: 'Mendapatkan album berdasarkan id.',
             data: {
                 album: {
                     ...album,
@@ -68,6 +67,7 @@ class AlbumHandler {
         this._validator.validateAlbumPayload(request.payload);
         const { name, year } = request.payload
         const albumId = await this._service.addAlbums({ name, year });
+
         const response = h.response({
             status: 'success',
             message: 'Menambahkan album',

@@ -36,8 +36,8 @@ class AlbumService {
             values: [id, name, year, created_at, updated_at]
         }
 
-        const result = await this._pool.query(query)
-
+        const result = await this._pool.query(query);
+        
         if (!result.rows[0].id) {
             throw new InvariantError('Album gagal ditambahkan');
         }

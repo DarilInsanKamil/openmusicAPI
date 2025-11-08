@@ -1,6 +1,7 @@
 require('dotenv').config();
 const SongService = require("./service/postgres/SongService");
 const Hapi = require('@hapi/hapi');
+const Jwt = require('@hapi/jwt');
 const songs = require('./api/songs')
 const albums = require('./api/albums')
 const SongValidator = require("./validator/song");
@@ -17,11 +18,16 @@ const AuthenticationsService = require('./service/postgres/AuthenticationService
 const AuthenticationsValidator = require('./validator/authentications')
 const TokenManager = require('./tokenize/TokenManager');
 
+const playlists = require('./api/playlist');
+const PlaylistsService = require('./service/postgres/PlaylistService')
+const PlaylistsValidator = require('./validator/playlists')
+
 const init = async () => {
     const songService = new SongService();
     const albumService = new AlbumService();
     const userService = new UsersService();
     const authenticationsService = new AuthenticationsService();
+    const playlistService = new PlaylistsService();
 
     const server = Hapi.server({
         port: process.env.PORT,
@@ -32,6 +38,28 @@ const init = async () => {
             }
         }
     })
+
+    await server.register([
+        {
+            plugin: Jwt,
+        },
+    ]);
+
+    server.auth.strategy('openmusicapp_jwt', 'jwt', {
+        keys: process.env.ACCESS_TOKEN_KEY,
+        verify: {
+            aud: false,
+            iss: false,
+            sub: false,
+            maxAgeSec: process.env.ACCESS_TOKEN_AGE,
+        },
+        validate: (artifacts) => ({
+            isValid: true,
+            credentials: {
+                id: artifacts.decoded.payload.id,
+            },
+        }),
+    });
 
     await server.register([
         {
@@ -56,6 +84,13 @@ const init = async () => {
             }
         },
         {
+            plugin: playlists,
+            options: {
+                service: playlistService,
+                validator: PlaylistsValidator
+            }
+        },
+        {
             plugin: authentications,
             options: {
                 authenticationsService: authenticationsService,
@@ -65,6 +100,7 @@ const init = async () => {
             }
         },
     ])
+
 
     server.ext('onPreResponse', (request, h) => {
         const { response } = request;
