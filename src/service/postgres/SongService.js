@@ -39,7 +39,7 @@ class SongService {
         const result = await this._pool.query(query);
 
         if (!result.rows.length) {
-            throw new NotFounderror('Gagal memperbarui song. Id tidak ditemukan');
+            throw new NotFounderror('Id song tidak ditemukan');
         }
 
         return result.rows[0];
