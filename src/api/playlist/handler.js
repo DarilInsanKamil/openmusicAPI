@@ -12,6 +12,8 @@ class PlaylistHandler {
         this.postPlaylistHandler = this.postPlaylistHandler.bind(this);
         this.postSongToPlaylistById = this.postSongToPlaylistById.bind(this);
         this.getSongToPlaylistById = this.getSongToPlaylistById.bind(this);
+        this.deleteSongByPlaylistIdHandler = this.deleteSongByPlaylistIdHandler.bind(this);
+
     }
 
     async postPlaylistHandler(request, h) {
@@ -71,13 +73,22 @@ class PlaylistHandler {
     }
 
     async deletePlaylistByIdHandler(request, h) {
-        const { id: credentialId } = request.auth.credentials;
-        const { id: playlistId } = request.params;
+        try {
+            const { id: credentialId } = request.auth.credentials;
+            const { id: playlistId } = request.params;
+            console.log(credentialId)
+            console.log(playlistId)
 
-        await this._service.deletePlaylstById({ playlistId, credentialId })
-        return {
-            status: 'success',
-            message: 'Menghapus playlist berdasarkan id.',
+            await this._service.verifyPlaylistOwner(playlistId, credentialId);
+            await this._service.deletePlaylstById({playlistId, owner: credentialId});
+
+            return {
+                status: 'success',
+                message: 'Menghapus playlist berdasarkan id.',
+            }
+        } catch (err) {
+            console.log(err)
+            throw err;
         }
     }
     async postSongToPlaylistById(request, h) {
@@ -106,10 +117,25 @@ class PlaylistHandler {
         }
     }
     async deleteSongByPlaylistIdHandler(request, h) {
-        const { id: playlistId } = request.params;
-        const { id: credentialId } = request.auth.credentials;
+        try {
+            this._validator.validateDeleteSongFromPlaylistPayload(request.payload);
+            const { songId } = request.payload;
+            const { id: playlistId } = request.params;
+            const { id: credentialId } = request.auth.credentials;
 
-        
+
+            await this._service.verifyPlaylistOwner(playlistId, credentialId);
+            await this._service.deleteSongFromPlaylist(playlistId, songId);
+
+            return {
+                status: 'success',
+                message: 'Lagu berhasil dihapus dari playlist'
+            }
+        } catch (err) {
+            console.log(err)
+            throw err;
+        }
+
     }
 }
 
