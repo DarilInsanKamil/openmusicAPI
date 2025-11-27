@@ -50,16 +50,23 @@ class PlaylistsService {
     }
 
     async verifyPlaylistOwner(playlistId, credentialId) {
+        console.log('Cek Owner -> Playlist:', playlistId, 'User:', credentialId);
         const query = {
-            text: `SELECT id FROM playlists
-                 WHERE id = $1 AND owner = $2`,
-            values: [playlistId, credentialId]
-        }
+            text: 'SELECT * FROM playlists WHERE id = $1',
+            values: [playlistId],
+        };
         const result = await this._pool.query(query)
 
         if (!result.rows.length) {
+            throw new NotFounderror('Playlist tidak ditemukan');
+        }
+
+        const playlist = result.rows[0];
+        if (playlist.owner !== credentialId) {
             throw new AuthorizationError('Anda tidak berhak mengakses resource ini');
         }
+
+
     }
     async getSongByPlaylistId(playlistId) {
         const query = {
@@ -73,6 +80,7 @@ class PlaylistsService {
     }
 
     async getPlaylistDetailById(playlistId, owner) {
+        
         await this.verifyPlaylistOwner(playlistId, owner);
 
         const query = {
@@ -112,7 +120,7 @@ class PlaylistsService {
         }
         return result.rows[0].id;
     }
-    
+
     async deleteSongFromPlaylist(playlistId, songId) {
         const query = {
             text: `DELETE FROM playlist_songs 
