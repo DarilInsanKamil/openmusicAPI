@@ -2,6 +2,7 @@ require('dotenv').config();
 const SongService = require("./service/postgres/SongService");
 const Hapi = require('@hapi/hapi');
 const Jwt = require('@hapi/jwt');
+const path = require('path');
 const songs = require('./api/songs')
 const albums = require('./api/albums')
 const SongValidator = require("./validator/song");

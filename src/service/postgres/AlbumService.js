@@ -79,7 +79,7 @@ class AlbumService {
     async addCoverAlbumById(albumId, cover_url) {
         await this.getAlbumById(albumId)
         const query = {
-            text: 'UPDATE albums SET cover_url = $1 WHERE id = $2 RETURNING id',
+            text: 'UPDATE albums SET cover = $1 WHERE id = $2 RETURNING id',
             values: [cover_url, albumId]
         }
 
