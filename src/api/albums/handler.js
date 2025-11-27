@@ -1,13 +1,15 @@
 class AlbumHandler {
-    constructor(service, validator) {
+    constructor(service, validator, storageService) {
         this._service = service;
         this._validator = validator;
+        this._storageService = storageService;
 
         this.getAllAlbumHandler = this.getAllAlbumHandler.bind(this);
         this.getAlbumByIdHandler = this.getAlbumByIdHandler.bind(this);
         this.postAlbumHandler = this.postAlbumHandler.bind(this);
         this.deleteAlbumByIdHandler = this.deleteAlbumByIdHandler.bind(this);
         this.putAlbumByIdHandler = this.putAlbumByIdHandler.bind(this);
+        this.postCoverAlbumHandler = this.postCoverAlbumHandler.bind(this);
     }
 
     async getAllAlbumHandler(request, h) {
@@ -73,6 +75,21 @@ class AlbumHandler {
             message: 'Menambahkan album',
             data: {
                 albumId
+            }
+        })
+        response.code(201);
+        return response;
+    }
+    async postCoverAlbumHandler (request, h) {
+        const {data} = request.payload;
+        this._validator.validateAlbumCoverPayload(data.hapi.headers);
+
+        const filename = await this._storageService.writeFile(data, data.hapi);
+
+        const response = h.response({
+            status: 'success',
+            data: {
+                fileLocation: `http://${process.env.HOST}:${process.env.PORT}/upload/images/${filename}`
             }
         })
         response.code(201);

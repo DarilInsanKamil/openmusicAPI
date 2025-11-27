@@ -5,6 +5,18 @@ const routes = (handle) => [
         handler: handle.postAlbumHandler
     },
     {
+        method: 'POST',
+        path: '/albums/{id}/covers',
+        handler: handle.postCoverAlbumHandler,
+        options: {
+            payload: {
+                allow: 'multipart/form-data',
+                multipart: true,
+                output: 'stream',
+            },
+        },
+    },
+    {
         method: 'GET',
         path: '/albums',
         handler: handle.getAllAlbumHandler

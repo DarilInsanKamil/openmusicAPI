@@ -25,6 +25,7 @@ const PlaylistsValidator = require('./validator/playlists')
 const _exports = require('./api/exports');
 const ProducerService = require('./service/rabbitmq/ProducerService');
 const ExportPlaylistValidator = require('./validator/export');
+const StorageService = require('./service/storage/StorageService');
 
 
 const init = async () => {
@@ -33,6 +34,7 @@ const init = async () => {
     const userService = new UsersService();
     const authenticationsService = new AuthenticationsService();
     const playlistService = new PlaylistsService();
+    const storageService = new StorageService(path.resolve(__dirname, 'api/albums/file/images'));
 
     const server = Hapi.server({
         port: process.env.PORT,
@@ -78,7 +80,8 @@ const init = async () => {
             plugin: albums,
             options: {
                 service: albumService,
-                validator: AlbumValidator
+                validator: AlbumValidator,
+                storageService: storageService
             }
         },
         {
