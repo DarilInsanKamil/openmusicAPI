@@ -106,6 +106,12 @@ class AlbumHandler {
     async postCoverAlbumHandler(request, h) {
         try {
             const { cover } = request.payload;
+
+            if (!cover) {
+                const InvariantError = require('../../execption/InvariantError');
+                throw new InvariantError('Cover file is required');
+            }
+
             this._validator.validateAlbumCoverPayload(cover.hapi.headers);
             const filename = await this._storageService.writeFile(cover, cover.hapi);
             const fileLocation = `http://${process.env.HOST}:${process.env.PORT}/upload/images/${filename}`;

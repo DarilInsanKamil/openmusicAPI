@@ -10,7 +10,7 @@ const routes = (handle) => [
         handler: handle.postCoverAlbumHandler,
         options: {
             payload: {
-                allow: 'multipart/form-data',
+                // allow: 'multipart/form-data',
                 multipart: true,
                 output: 'stream',
                 maxBytes: 512000
