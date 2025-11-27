@@ -52,14 +52,14 @@ const routes = (handle) => [
             auth: 'openmusicapp_jwt'
         }
     },
-    {
-        method: 'GET',
-        path: '/playlists/{id}/activities',
-        // handler: handle.deleteSongByPlaylistIdHandler,
-        options: {
-            auth: 'openmusicapp_jwt'
-        }
-    },
+    // {
+    //     method: 'GET',
+    //     path: '/playlists/{id}/activities',
+    //     // handler: handle.deleteSongByPlaylistIdHandler,
+    //     options: {
+    //         auth: 'openmusicapp_jwt'
+    //     }
+    // },
 
 ]
 
