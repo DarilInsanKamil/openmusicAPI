@@ -28,10 +28,14 @@ const ProducerService = require('./service/rabbitmq/ProducerService');
 const ExportPlaylistValidator = require('./validator/export');
 const StorageService = require('./service/storage/StorageService');
 
+const CacheService = require('./service/redis/CacheService');
+
+
 
 const init = async () => {
+    const cacheService = new CacheService();
     const songService = new SongService();
-    const albumService = new AlbumService();
+    const albumService = new AlbumService(cacheService);
     const userService = new UsersService();
     const authenticationsService = new AuthenticationsService();
     const playlistService = new PlaylistsService();
