@@ -1,3 +1,5 @@
+const InvariantError = require('../../execption/InvariantError');
+
 class AlbumHandler {
     constructor(service, validator, storageService) {
         this._service = service;
@@ -10,6 +12,9 @@ class AlbumHandler {
         this.deleteAlbumByIdHandler = this.deleteAlbumByIdHandler.bind(this);
         this.putAlbumByIdHandler = this.putAlbumByIdHandler.bind(this);
         this.postCoverAlbumHandler = this.postCoverAlbumHandler.bind(this);
+        this.deleteLikeAlbumHandler = this.deleteLikeAlbumHandler.bind(this);
+        this.postLikeAlbumHandler = this.postLikeAlbumHandler.bind(this);
+        this.getLikeAlbumHandler = this.getLikeAlbumHandler.bind(this);
     }
 
     async getAllAlbumHandler(request, h) {
@@ -108,7 +113,6 @@ class AlbumHandler {
             const { cover } = request.payload;
 
             if (!cover) {
-                const InvariantError = require('../../execption/InvariantError');
                 throw new InvariantError('Cover file is required');
             }
 
@@ -127,6 +131,55 @@ class AlbumHandler {
             console.log('error cuy: ', err)
             throw err;
         }
+    }
+
+    async getLikeAlbumHandler(request, h) {
+        try {
+            const { id } = request.params;
+            const { likes } = await this._service.getLikeAlbum(id);
+            const response = h.response({
+                status: 'success',
+                message: 'Berhasil mengambil jumlah like',
+                data: {
+                    likes
+                }
+            })
+            response.code(200)
+            return response
+        } catch (err) {
+            console.log(err)
+            throw err;
+        }
+    }
+    async postLikeAlbumHandler(request, h) {
+        try {
+            const { id: userId } = request.auth.credentials;
+            const { id: albumId } = request.params;
+
+            await this._service.addLikeAlbum(userId, albumId);
+            const response = h.response({
+                status: 'success',
+                message: 'Berhasil memberikan like'
+            })
+            response.code(201)
+            return response
+        } catch (err) {
+            console.log('error: ', err);
+            throw err
+        }
+    }
+    async deleteLikeAlbumHandler(request, h) {
+        const { id: userId } = request.auth.credentials
+        const { id: albumId } = request.params;
+
+        await this._service.deleteLikeAlbum(userId, albumId);
+
+        const response = h.response({
+            status: 'success',
+            message: 'Berhasil hapus like'
+        })
+        response.code(200)
+        return response
     }
 }
 

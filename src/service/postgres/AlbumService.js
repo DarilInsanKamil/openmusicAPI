@@ -73,9 +73,9 @@ class AlbumService {
             values: [albumId],
         };
         const result = await this._pool.query(query);
-        console.log(result.rows)
         return result.rows;
     }
+
     async addCoverAlbumById(albumId, cover_url) {
         await this.getAlbumById(albumId)
         const query = {
@@ -87,6 +87,57 @@ class AlbumService {
 
         if (!result.rows.length) {
             throw new NotFounderror('Gagal memperbarui cover album. Id tidak ditemukan');
+        }
+    }
+    async checLikeExist(album_id, user_id) {
+        const query = {
+            text: 'SELECT user_id, album_id FROM user_album_like WHERE user_id = $1 AND album_id = $2',
+            values: [user_id, album_id]
+        }
+        const result = await this._pool.query(query)
+        if (result.rows.length) {
+            throw new InvariantError('Anda sudah menyukai album ini');
+        }
+    }
+    async addLikeAlbum(userId, albumId) {
+        await this.getAlbumById(albumId);
+        await this.checLikeExist(albumId, userId);
+
+        const id = `like-${nanoid(16)}`;
+        const query = {
+            text: 'INSERT INTO user_album_like (id, user_id, album_id) VALUES ($1, $2, $3) RETURNING id',
+            values: [id, userId, albumId],
+        };
+
+        const result = await this._pool.query(query);
+
+        if (!result.rows[0].id) {
+            throw new InvariantError('Gagal Memberi Like')
+        }
+    }
+
+    async getLikeAlbum(albumId) {
+        const query = {
+            text: 'SELECT COUNT(*) FROM user_album_like WHERE album_id = $1',
+            values: [albumId],
+        };
+        const result = await this._pool.query(query);
+        const likes = Number(result.rows[0].count);
+        return {
+            likes,
+        };
+    }
+
+    async deleteLikeAlbum(userId, albumId) {
+        const query = {
+            text: 'DELETE FROM user_album_like WHERE user_id = $1 AND album_id = $2 RETURNING id',
+            values: [userId, albumId],
+        };
+
+        const result = await this._pool.query(query);
+
+        if (!result.rows.length) {
+            throw new NotFounderror('Gagal membatalkan like. Like tidak ditemukan');
         }
     }
 }
