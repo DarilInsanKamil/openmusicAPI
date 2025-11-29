@@ -15,21 +15,19 @@ class ExportsHandler {
             await this._playlistService.getPlaylistDetailById(playlistId, credentialId);
 
             const message = {
-                userId: request.auth.credentials.id,
+                playlistId: playlistId,
                 targetEmail: request.payload.targetEmail,
-            }
+            };
 
             await this._service.sendMessage('export:playlist', JSON.stringify(message));
 
             const response = h.response({
                 status: 'success',
                 message: 'Permintaan anda dalam antrian',
-            })
-
-            response.code(201)
+            });
+            response.code(201);
             return response;
-        }
-        catch (err) {
+        } catch (err) {
             console.log('error cuy', err);
             throw err;
         }
