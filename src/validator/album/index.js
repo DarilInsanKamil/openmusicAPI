@@ -9,13 +9,14 @@ const AlbumValidator = {
         }
     },
     validateAlbumCoverPayload: (headers) => {
+        const contentType = headers['content-type'];
         const allowedMimeTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
 
         if (!allowedMimeTypes.includes(contentType)) {
             throw new InvariantError(`Tipe file tidak didukung. Gunakan format: ${allowedMimeTypes.join(', ')}`);
         }
     },
-    validateAlbumLikePayload: (payload) =>  {
+    validateAlbumLikePayload: (payload) => {
         const validationResult = AlbumPayloadSchema.validate(payload)
         if (validationResult.error) {
             throw new InvariantError(validationResult.error.message)

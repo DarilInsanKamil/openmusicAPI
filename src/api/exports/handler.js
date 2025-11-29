@@ -16,7 +16,7 @@ class ExportsHandler {
 
             const message = {
                 userId: request.auth.credentials.id,
-                targetEmail: request.payload.targetEmail
+                targetEmail: request.payload.targetEmail,
             }
 
             await this._service.sendMessage('export:playlist', JSON.stringify(message));

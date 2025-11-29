@@ -111,7 +111,6 @@ class AlbumHandler {
     async postCoverAlbumHandler(request, h) {
         try {
             const { cover } = request.payload;
-
             if (!cover) {
                 throw new InvariantError('Cover file is required');
             }
