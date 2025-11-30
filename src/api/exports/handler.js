@@ -20,10 +20,10 @@ class ExportsHandler {
             };
 
             await this._service.sendMessage('export:playlist', JSON.stringify(message));
-
             const response = h.response({
                 status: 'success',
                 message: 'Permintaan anda dalam antrian',
+                data: playlistId
             });
             response.code(201);
             return response;

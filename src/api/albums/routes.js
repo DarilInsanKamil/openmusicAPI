@@ -1,3 +1,6 @@
+const path = require('path');
+
+
 const routes = (handle) => [
     {
         method: 'POST',
@@ -14,6 +17,16 @@ const routes = (handle) => [
                 multipart: true,
                 output: 'stream',
                 maxBytes: 512000
+            },
+        },
+    },
+    {
+        method: 'GET',
+        path: '/upload/images/{param*}',
+        handler: {
+            directory: {
+                path: path.resolve(__dirname, './file/images/'),
+                redirectToSlash: true,
             },
         },
     },
